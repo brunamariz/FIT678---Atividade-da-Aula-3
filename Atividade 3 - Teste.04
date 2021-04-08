@@ -1,0 +1,95 @@
+---
+title: "FIT678 - Atividade da Aula 3"
+author: "Bruna Mariz"
+date: "08/04/2021"
+output: html_document
+---
+
+#Teste do qui-quadrado para dados em camundongos e milho
+
+Faça o download dos dados em camundongo (população de retrocruzamento) e milho (população F2) abaixo
+Usando um arquivo R Markdown, carregue os dados no R e calcule o teste do qui-quadrado usando funções básicas do R mostradas durante a aula "Chi-square tests, P-values and multiple testing correction (March 30/April 2, 2021)"
+Use a correção de Bonferroni para ver se os locos marcadores seguem a segregação mendeliana esperada para cada população de camundongos e milho
+Envie o arquivo em HTML gerado a partir do seu script em R Markdown que você usou para rodar as análises acima usando o botão "Adicionar envio" na página abaixo
+ 
+## Teste do Qui-quadrado para camundongos (Retrocruzamento)
+```{r}
+dados.mouse <- read.csv("mouse.csv", row.names = 1) #busca arquivo da minha pasta
+dim(dados.mouse) #mostra quantas colunas e linha eu tenho
+head(dados.mouse) #mostra as 6 primeiras linhas dos dados
+tail(dados.mouse) # mostra o final dos dados 
+str(dados.mouse)
+
+```
+##Teste do Qui-quadrado
+```{r}
+exp1 <- c(0.5, 0.5) #frequencia esperada para meu RC -> 0,5 do P1 e 0,5 do P2 (expectativa que eu crio de vetor)
+p.value1 = rep(NA, 14)  #rep = repetição --> inicializa um objeto para guardar os p-valores gerados, que repitiu o NA em M vezes, no caso M=14
+
+for (m in 1:14) {
+  obs <- table(dados.mouse[,m])
+  p.value1[m] <- chisq.test(x = obs, p = exp1)$p.value1
+} 
+
+#uso o for para alimentar esse vetor de p-valores -> vai sair para cada marcador e in
+#obs -> meus valores observados de 0 e 1
+#uso o table para contar o número de 0 e 1 dos meus dados
+#chisq.test com X observações e p a frequência esperada do meu RC (ou probabilidade de encontrar 50% de cada alelo)
+#$p-valor guarda só o p-valor (no caso é o que de fato me interessa) -> é um dos comandos que aparece quando chamo o str
+#dentro de str tem o comando estatistic que mostra o qui-quadrado (caso eu precisasse desses valores relatados)
+```
+
+##Dispersão gráfica 
+
+```{r}
+plot(sort(p.value1)) #sort -> ordena os p-valores do menor para o maior ->gráfico dos valores ordenados
+abline(h = 0.05, col = "red")
+legend("topleft", legend=c("alpha = 0.05"), col=c("red"), lty=1)
+
+```
+
+
+## Correção de Bonferroni
+
+
+```{r}
+plot(sort(p.value))
+abline(h = c(0.05, 0.05/M), col = c("red", "blue"))
+legend("topleft", legend=c("alpha = 0.05", "alpha* = 0.05/M"), col=c("red", "blue"), lty=1)
+
+```
+
+## Teste do Qui-quadrado para milho (F2)
+```{r}
+dados.maize <- read.csv("maize.csv", row.names = 1) #busca arquivo da minha pasta
+dim(dados.maize) #mostra quantas colunas e linha eu tenho
+head(dados.maize) #mostra as 6 primeiras linhas dos dados
+tail(dados.maize) # mostra o final dos dados 
+str(dados.maize)
+```
+##Teste do Qui-quadrado
+```{r}
+exp2 <- c(0.25, 0.5, 0,25) #frequencia esperada para minha F2 -> segrega 1:2:1 (expectativa que eu crio de vetor)
+p.value2 = rep(NA, 13)  #rep = repetição --> inicializa um objeto para guardar os p-valores gerados, que repitiu o NA em M vezes, no caso M=13
+
+for (m in 1:13) {
+  obs <- table(dados.maize[,m])
+  p.value2[m] <- chisq.test(x = obs, p = exp2)$p.value2
+} 
+
+#uso o for para alimentar esse vetor de p-valores -> vai sair para cada marcador e in
+#obs -> meus valores observados de 0 e 1
+#uso o table para contar o número de 0 e 1 dos meus dados
+#chisq.test com X observações e p a frequência esperada do meu RC (ou probabilidade de encontrar 50% de cada alelo)
+#$p-valor guarda só o p-valor (no caso é o que de fato me interessa) -> é um dos comandos que aparece quando chamo o str
+#dentro de str tem o comando estatistic que mostra o qui-quadrado (caso eu precisasse desses valores relatados)
+```
+
+##Dispersão gráfica 
+
+```{r}
+plot(sort(p.value2)) #sort -> ordena os p-valores do menor para o maior ->gráfico dos valores ordenados
+abline(h = 0.05, col = "red")
+legend("topleft", legend=c("alpha = 0.05"), col=c("red"), lty=1)
+
+```
